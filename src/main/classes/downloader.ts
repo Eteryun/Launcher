@@ -32,12 +32,15 @@ export class Downloader extends EventEmitter {
     fs.mkdirSync(path.dirname(this.destination), { recursive: true });
     const file = fs.createWriteStream(this.destination);
 
-    this.request = this.http.get(this.source, (response) => {
+    this.request = this.get(this.source, (response) => {
       this.response = response;
 
       if (response.statusCode != 200) {
         this.stop();
-        this.emit('error', new Error(response.statusMessage));
+        this.emit(
+          'error',
+          new Error(`${response.statusCode} - ${response.statusMessage}`),
+        );
         file.close();
         fs.unlinkSync(this.destination);
         return;
@@ -75,6 +78,17 @@ export class Downloader extends EventEmitter {
       else this.emit('error', error);
       file.close();
       fs.unlinkSync(this.destination);
+    });
+  };
+
+  get = (url: string, callback: (res: IncomingMessage) => void) => {
+    return this.http.get(url, (response) => {
+      if (
+        (response.statusCode === 301 || response.statusCode === 302) &&
+        response.headers.location
+      )
+        this.get(response.headers.location, callback);
+      else callback(response);
     });
   };
 

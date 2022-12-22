@@ -5,7 +5,7 @@ import path from 'path';
 
 import { getJavaRuntimeManifest, parseFilesFromManifest } from './java';
 import { checkRules, getNativeArtifact, parseArtifactPath } from './library';
-import { getAssetObjectPath } from './path';
+import { getAssetObjectPath, instancesPath } from './path';
 import {
   getAssetsIndex,
   getClientFromManifest,
@@ -87,7 +87,16 @@ export const getFilesFromServer = async (server: Distro.Server) => {
     ),
   );
 
-  const files = server.files;
+  const files = server.files
+    .filter((library) => (library.rules ? checkRules(library.rules) : true))
+    .map((file) => {
+      file.artifact.path = path.join(
+        instancesPath,
+        server.id,
+        file.artifact.path,
+      );
+      return file;
+    });
   files.push(...libraries.map(libraryToFile));
   files.push(
     ...Object.keys(assetIndex.objects).map((key) =>

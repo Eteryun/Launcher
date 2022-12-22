@@ -30,6 +30,7 @@ const start = async ({
       error = data;
     });
     child.on('close', () => {
+      logger.error(error);
       if (error) {
         resolve({ error });
       } else {

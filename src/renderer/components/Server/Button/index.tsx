@@ -69,7 +69,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
     });
     if (data.error)
       notification.error(
-        `Não foi possível iniciar o jogo. Error: ${data.error}`,
+        `Não foi possível iniciar o jogo. Verifique os logs.`,
         15,
       );
     else notification.success(`Jogo iniciado com sucesso.`);

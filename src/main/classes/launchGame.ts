@@ -84,15 +84,17 @@ export class LaunchGame {
 
     const clientPath = getVersionJarPath(manifest.id);
 
-    const classPath = libraries
-      .filter((library) => !getNativeArtifact(library))
-      .map((library) =>
-        parseArtifactPath(
-          library.name,
-          getNativeArtifact(library) || library.downloads.artifact,
+    const classPath = [clientPath];
+    classPath.push(
+      ...libraries
+        .filter((library) => !getNativeArtifact(library))
+        .map((library) =>
+          parseArtifactPath(
+            library.name,
+            getNativeArtifact(library) || library.downloads.artifact,
+          ),
         ),
-      );
-    classPath.push(clientPath);
+    );
 
     return classPath.join(getPlatform() === 'windows' ? ';' : ':');
   };

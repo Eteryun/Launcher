@@ -8,6 +8,7 @@ declare namespace Server {
 
   type File = {
     name: string;
+    rules?: Version.Rule[];
     exclude?: string[];
     artifact: Required<Artifact>;
   };
